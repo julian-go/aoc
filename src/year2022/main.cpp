@@ -13,7 +13,7 @@ auto main(int argc, char *argv[]) -> int {
     num_runs = atoi(argv[1]);
   }
 
-  const auto p = std::string{"input/year2022/"};
+  const auto p = std::string{"inputs/year2022/"};
   auto problems = std::vector<aoc::Problem>{
       {"01-1-example", Day01_1, "24000", p + "example-01.txt"},
       {"01-1-problem", Day01_1, "71300", p + "problem-01.txt"},

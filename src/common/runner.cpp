@@ -24,17 +24,14 @@ void Runner::Run() {
       auto input_file = std::ifstream{problem.input_file_path};
       start = high_resolution_clock::now();
       result = problem.solve(input_file);
-      auto elapsed =
-          duration_cast<microseconds>(high_resolution_clock::now() - start)
-              .count();
+      auto elapsed = duration_cast<microseconds>(high_resolution_clock::now() - start).count();
 
       b.maximum_us = std::max(b.maximum_us, elapsed);
       b.minimum_us = std::min(b.minimum_us, elapsed);
       int n = i + 1;
       old_mean = b.mean_us;
       b.mean_us += (static_cast<double>(elapsed) - b.mean_us) / n;
-      variance = variance +
-                 ((elapsed - b.mean_us) * (elapsed - old_mean) - variance) / n;
+      variance = variance + ((elapsed - b.mean_us) * (elapsed - old_mean) - variance) / n;
     }
     b.standard_deviation_us = std::sqrt(variance);
     PrintRun(aoc::Run{problem, b, result});
