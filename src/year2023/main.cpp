@@ -15,10 +15,10 @@ auto main(int argc, char *argv[]) -> int {
 
   const auto p = std::string{"inputs/year2023/"};
   auto problems = std::vector<aoc::Problem>{
-      {"01-1-example", Day01_1, "", p + "example-01.txt"},
-      {"01-1-problem", Day01_1, "", p + "problem-01.txt"},
-      {"01-2-example", Day01_2, "", p + "example-01.txt"},
-      {"01-2-problem", Day01_2, "", p + "problem-01.txt"},
+      {"01-1-example", Day01_1, "142", p + "example-01.txt"},
+      {"01-1-problem", Day01_1, "54940", p + "problem-01.txt"},
+      {"01-2-example", Day01_2, "281", p + "example-01-2.txt"},
+      {"01-2-problem", Day01_2, "54208", p + "problem-01.txt"},
       {"02-1-example", Day02_1, "", p + "example-02.txt"},
       {"02-1-problem", Day02_1, "", p + "problem-02.txt"},
       {"02-2-example", Day02_2, "", p + "example-02.txt"},
