@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 
 #include "common/benchmark.hpp"
 #include "common/display.hpp"
