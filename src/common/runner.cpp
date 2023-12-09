@@ -12,14 +12,14 @@ namespace aoc {
 
 void Runner::Run() {
   using namespace std::chrono;
-  auto start = high_resolution_clock::time_point{};
-  auto b = Benchmark{};
-  auto old_mean = double{0};
-  auto variance = double{0};
 
   PrintHeader();
 
   for (const auto& problem : problems) {
+    auto start = high_resolution_clock::time_point{};
+    auto b = Benchmark{};
+    auto old_mean = double{0};
+    auto variance = double{0};
     auto result = std::string{};
     for (int i{0}; i < num_runs_; ++i) {
       auto input_file = std::ifstream{problem.input_file_path};
