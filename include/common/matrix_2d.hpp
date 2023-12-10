@@ -3,6 +3,7 @@
 
 #include <type_traits>
 #include <vector>
+#include <ostream>
 
 template <typename TType, bool TRowMajor = true>
 class Matrix2D {
@@ -41,8 +42,8 @@ class Matrix2D {
     data_.resize(size_x * size_y);
   }
 
-  bool contains(const int& size_x, const int& size_y) {
-    return size_x >= 0 && size_y >= 0 && size_x < size_x_ && size_y < size_y_;
+  bool contains(const int& x, const int& y) const {
+    return x >= 0 && y >= 0 && x < size_x_ && y < size_y_;
   }
 
   void fill(const TType& value) {
@@ -53,6 +54,8 @@ class Matrix2D {
 
   size_t sizeX() const { return size_x_; }
   size_t sizeY() const { return size_y_; }
+
+  const std::vector<TType>& data() const { return data_; }
 
  private:
   std::vector<TType> data_;
