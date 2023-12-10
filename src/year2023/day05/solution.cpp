@@ -1,73 +1,101 @@
+#include <algorithm>
 #include <cstdint>
+#include <iostream>
+#include <optional>
 #include <sstream>
 #include <vector>
 
+#include "common/interval.hpp"
 #include "solutions.hpp"
 
-class RangeMap {
- public:
-  bool contains(std::int64_t value) const {
-    1;
-    auto x = value >= source && value < (source + length);
-    return x;
-  }
-  std::int64_t map(std::int64_t value) const {
-    auto x = target + (value - source);
-    return x;
-  }
-
-  std::int64_t target = 0;
-  std::int64_t source = 0;
+struct IntervalMap {
+  std::int64_t from = 0;
+  std::int64_t to = 0;
   std::int64_t length = 0;
+
+  auto map(aoc::Interval rhs) const -> std::tuple<aoc::Interval, std::vector<aoc::Interval>> {
+    auto mapped = aoc::Interval{0, 0};
+    mapped = aoc::Intersection(rhs, aoc::Interval{from, from + length});
+    mapped += (to - from);
+
+    auto remainder = aoc::Difference(rhs, aoc::Interval{from, from + length});
+
+    return {mapped, remainder};
+  }
 };
 
 struct Almanac {
-  std::vector<std::int64_t> seeds;
-  std::vector<std::vector<RangeMap>> maps;
+  std::vector<aoc::Interval> seeds;
+  std::vector<std::vector<IntervalMap>> maps;
 };
 
-auto GetAlmanac(std::ifstream& in) -> Almanac {
+auto GetAlmanac(std::ifstream& in, int part) -> Almanac {
   auto almanac = Almanac{};
   auto line = std::string{};
-  auto value = std::int64_t{0};
+
+  in.ignore(10, ':');
 
   {
-    in.ignore(10, ':');
     std::getline(in, line);
     auto ss = std::stringstream{line};
-    while (ss >> value) {
-      almanac.seeds.emplace_back(value);
+    auto from = std::int64_t{0};
+    auto length = std::int64_t{0};
+    while (ss >> from >> length) {
+      if (part == 1) {
+        almanac.seeds.emplace_back(from, from + 1);
+        almanac.seeds.emplace_back(length, length + 1);
+      } else {
+        almanac.seeds.emplace_back(from, from + length);
+      }
     }
-  }
+  } 
 
   in.ignore();  // skip one line
 
   while (std::getline(in, line)) {
-    auto maps = std::vector<RangeMap>{};
+    auto maps = std::vector<IntervalMap>{};
     while (std::getline(in, line) && !line.empty()) {
       auto ss = std::stringstream{line};
       maps.emplace_back();
-      ss >> maps.back().target >> maps.back().source >> maps.back().length;
+      ss >> maps.back().to >> maps.back().from >> maps.back().length;
     }
     almanac.maps.push_back(maps);
   }
   return almanac;
 }
 
-std::string Day05_1(std::ifstream& in) {
-  auto almanac = GetAlmanac(in);
-  auto result = std::numeric_limits<std::int64_t>::max();
-  for (const auto& seed : almanac.seeds) {
-    auto value = seed;
-    for (const auto& map : almanac.maps) {
-      auto it = std::find_if(map.begin(), map.end(), [value](auto m) { return m.contains(value); });
-      if (it != map.end()) {
-        value = it->map(value);
+void MapAlmanac(Almanac& almanac) {
+  for (const auto& map_set : almanac.maps) {
+    auto mapped_seeds = std::vector<aoc::Interval>{};
+    // We iterate over all seeds, mapping the using the map function. The "remainder" of the
+    // interval is returned. We do this to keep track of the seeds that are not mapped in the
+    // current stage, since they keep their current value.
+    for (const auto& map : map_set) {
+      auto seeds = almanac.seeds;
+      almanac.seeds.clear();
+      while (!seeds.empty()) {
+        auto [mapped, remainder] = map.map(seeds.back());
+        seeds.pop_back();
+        if (!mapped.empty()) {
+          mapped_seeds.push_back(mapped);
+        }
+        std::move(remainder.begin(), remainder.end(), std::back_inserter(almanac.seeds));
       }
     }
-    result = std::min(value, result);
+    std::move(mapped_seeds.begin(), mapped_seeds.end(), std::back_inserter(almanac.seeds));
   }
+}
+
+std::string Day05_1(std::ifstream& in) {
+  auto almanac = GetAlmanac(in, 1);
+  MapAlmanac(almanac);
+  auto result = std::min_element(almanac.seeds.begin(), almanac.seeds.end())->start;
   return std::to_string(result);
 };
 
-std::string Day05_2(std::ifstream& in) { return ""; };
+std::string Day05_2(std::ifstream& in) {
+  auto almanac = GetAlmanac(in, 2);
+  MapAlmanac(almanac);
+  auto result = std::min_element(almanac.seeds.begin(), almanac.seeds.end())->start;
+  return std::to_string(result);
+};
