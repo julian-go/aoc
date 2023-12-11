@@ -6,6 +6,7 @@
 #include "common/matrix_2d.hpp"
 #include "solutions.hpp"
 
+namespace {
 enum Direction { kUp = 1, kRight = 2, kDown = 4, kLeft = 8 };
 
 auto GetMap(std::ifstream& in) -> std::tuple<Matrix2D<int>, std::pair<int, int>> {
@@ -106,6 +107,8 @@ auto TestPointInsideLoop(const Matrix2D<int>& map, const Matrix2D<int>& distance
 
   return (up_count % 2) != 0;
 }
+
+}  // namespace
 
 std::string Day10_1(std::ifstream& in) {
   auto [map, start] = GetMap(in);

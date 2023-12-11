@@ -7,6 +7,8 @@
 
 #include "solutions.hpp"
 
+namespace {
+
 using Coordinate = std::array<char, 3>;
 
 struct CoordinateHash {
@@ -52,6 +54,8 @@ auto GetMap(std::ifstream& in) -> Map {
   auto [map, ghosts] = GetMapAndGhosts(in);
   return map;
 }
+
+}  // namespace
 
 std::string Day08_1(std::ifstream& in) {
   auto instructions = GetInstructions(in);
