@@ -69,7 +69,7 @@ auto g(const Problem& p, Cache& c, int i = 0, int n_set = 0, int n_group = 0, in
   if (p.data[i] == '#') {
     result += g(p, c, i + 1, n_set, n_group + 1, current_group);
   } else if (p.data[i] == '.') {
-    if (n_group == p.groups[current_group]) {
+    if (current_group < p.groups.size() && n_group == p.groups[current_group]) {
       result += g(p, c, i + 1, n_set, 0, current_group + 1);
     } else if (n_group == 0) {
       result += g(p, c, i + 1, n_set, 0, current_group);
@@ -81,7 +81,7 @@ auto g(const Problem& p, Cache& c, int i = 0, int n_set = 0, int n_group = 0, in
       result += g(p, c, i + 1, n_set + 1, n_group + 1, current_group);
     }
     // case where we place a '.'
-    if (n_group == p.groups[current_group]) {
+    if (current_group < p.groups.size() && n_group == p.groups[current_group]) {
       result += g(p, c, i + 1, n_set, 0, current_group + 1);
     } else if (n_group == 0) {
       result += g(p, c, i + 1, n_set, 0, current_group);

@@ -36,108 +36,54 @@ std::optional<int> FindSymmetry(Map map, int tolerance = 0) {
   }
   return std::nullopt;
 }
+
+auto GetMap(std::ifstream& in, std::vector<std::int32_t>& rows, std::vector<std::int32_t>& cols) {
+  auto line = std::string{};
+  int row{0};
+  rows.clear();
+  cols.clear();
+  while (std::getline(in, line)) {
+    if (line.empty()) {
+      break;
+    }
+    rows.emplace_back(0);
+    if (cols.size() == 0) {
+      cols.resize(line.size(), 0);
+    }
+    for (int col = 0; col < std::ssize(line); ++col) {
+      if (line[col] == '#') {
+        rows[row] |= (1 << col);
+        cols[col] |= (1 << row);
+      }
+    }
+    ++row;
+  }
+}
+
+auto solve(std::ifstream& in, int tolerance) -> int {
+  auto row_count = int{0}, col_count = int{0};
+  auto rows = std::vector<std::int32_t>{};
+  auto columns = std::vector<std::int32_t>{};
+  rows.reserve(32);
+  columns.reserve(32);
+
+  while (!in.fail()) {
+    GetMap(in, rows, columns);
+
+    auto count = FindSymmetry(rows, tolerance);
+    if (!count) {
+      count = FindSymmetry(columns, tolerance);
+      col_count += *count;
+    } else {
+      row_count += *count;
+    }
+  }
+
+  return col_count + 100 * row_count;
+}
+
 }  // namespace
 
-std::string Day13_1(std::ifstream& in) {
-  auto row_count = int{0}, col_count = int{0};
-  auto rows = std::vector<std::int32_t>{};
-  auto columns = std::vector<std::int32_t>{};
-  rows.reserve(32);
-  columns.reserve(32);
+std::string Day13_1(std::ifstream& in) { return std::to_string(solve(in, 0)); };
 
-  auto line = std::string{};
-  int row{0};
-  while (std::getline(in, line)) {
-    if (!line.empty()) {
-      rows.emplace_back(0);
-      if (columns.size() == 0) {
-        columns.resize(line.size(), 0);
-      }
-
-      for (int col = 0; col < std::ssize(line); ++col) {
-        if (line[col] == '#') {
-          rows[row] |= (1 << col);
-          columns[col] |= (1 << row);
-        }
-      }
-
-      ++row;
-    } else {
-      auto count = FindSymmetry(rows);
-      if (!count) {
-        count = FindSymmetry(columns);
-        col_count += *count;
-      } else {
-        row_count += *count;
-      }
-
-      rows.clear();
-      columns.clear();
-      row = 0;
-    }
-  }
-  auto count = FindSymmetry(rows);
-  if (!count) {
-    count = FindSymmetry(columns);
-    col_count += *count;
-  } else {
-    row_count += *count;
-  }
-  return std::to_string(col_count + 100 * row_count);
-};
-
-std::string Day13_2(std::ifstream& in) {
-  auto row_count = int{0}, col_count = int{0};
-  auto rows = std::vector<std::int32_t>{};
-  auto columns = std::vector<std::int32_t>{};
-  rows.reserve(32);
-  columns.reserve(32);
-
-  auto line = std::string{};
-  int row{0};
-  while (std::getline(in, line)) {
-    //    std::cout << line << std::endl;
-    if (!line.empty()) {
-      rows.emplace_back(0);
-      if (columns.size() == 0) {
-        columns.resize(line.size(), 0);
-      }
-
-      for (int col = 0; col < std::ssize(line); ++col) {
-        if (line[col] == '#') {
-          rows[row] |= (1 << col);
-          columns[col] |= (1 << row);
-        }
-      }
-
-      ++row;
-    } else {
-      auto count = FindSymmetry(rows, 1);
-      if (!count) {
-        count = FindSymmetry(columns, 1);
-        col_count += *count;
-        //        for (auto c : columns) {
-        //          std::cout << c << " ";
-        //        }
-        //        std::cout << std::endl;
-        //        std::cout << col_count << std::endl;
-
-      } else {
-        row_count += *count;
-      }
-      //      std::cout << *count << std::endl;
-
-      rows.clear();
-      columns.clear();
-      row = 0;
-    }
-  }
-  auto count = FindSymmetry(rows, 1);
-  if (!count) {
-    count = FindSymmetry(columns, 1);
-    col_count += *count;
-  } else {
-    row_count += *count;
-  }
-  return std::to_string(col_count + 100 * row_count);
-};
+std::string Day13_2(std::ifstream& in) { return std::to_string(solve(in, 1)); };

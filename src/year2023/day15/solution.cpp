@@ -57,14 +57,14 @@ std::string Day15_2(std::ifstream& in) {
   }
 
   int result{0};
-  int i{1};
+  int num_box{1};
   for (const auto& box : hash_map) {
-    int j = 1;
+    int num_lens{1};
     for (const auto& lens : box) {
-      result += i * j * lens.second;
-      ++j;
+      result += num_box * num_lens * lens.second;
+      ++num_lens;
     }
-    ++i;
+    ++num_box;
   }
   return std::to_string(result);
 };
