@@ -2,6 +2,7 @@
 #include <deque>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 
 #include "common/matrix_2d.hpp"
 #include "common/utils.hpp"
@@ -47,30 +48,35 @@ auto GetMap(std::ifstream& in) -> Map {
   return map;
 }
 
-}  // namespace
+auto Solve(Map map, std::pair<Coordinate, Direction> start) -> int {
+  std::deque<std::pair<Coordinate, Direction>> to_process{start};
 
-std::string Day16_1(std::ifstream& in) {
-  auto map = GetMap(in);
-
-  std::deque<std::pair<Coordinate, Direction>> to_process{};
-  to_process.emplace_back(Coordinate{0, 0}, kLeft);
-  const auto dir_map = std::map<Direction, Coordinate>{
-      {kUp, {0, -1}}, {kDown, {0, 1}}, {kLeft, {-1, 0}}, {kRight, {1, 0}}};
-
+  int result{0};
   while (!to_process.empty()) {
     auto [coord, dir] = to_process.front();
     to_process.pop_front();
 
-    if (!map.contains(coord.x, coord.y)) {
-      continue;  // out of bounds
-    }
-
     auto& map_val = map.at(coord.x, coord.y);
+    if (map_val.second == 0) result++;
     map_val.second |= dir;
 
     // These are given from the perspektive of the receiving node, so the directions are flipped
     const auto propagate_laser = [&](Direction dir) {
-      auto next = coord + dir_map.at(dir);
+      aoc::Vector2D next;
+      switch (dir) {
+        case kUp:
+          next = coord + aoc::Vector2D(0, -1);
+          break;
+        case kDown:
+          next = coord + aoc::Vector2D(0, 1);
+          break;
+        case kLeft:
+          next = coord + aoc::Vector2D(-1, 0);
+          break;
+        case kRight:
+          next = coord + aoc::Vector2D(1, 0);
+          break;
+      }
       if (!map.contains(next.x, next.y)) {
         return;  // out of bounds
       }
@@ -92,26 +98,116 @@ std::string Day16_1(std::ifstream& in) {
       }
     };
 
-    const auto propagate_map = std::map<Type, std::map<Direction, std::vector<Direction>>>{
-        {Type::kForwardMirror,
-         {{kLeft, {kUp}}, {kUp, {kLeft}}, {kRight, {kDown}}, {kDown, {kRight}}}},
-        {Type::kBackwardMirror,
-         {{kLeft, {kDown}}, {kUp, {kRight}}, {kRight, {kUp}}, {kDown, {kLeft}}}},
-        {Type::kHorizontalSplitter,
-         {{kLeft, {kRight}}, {kUp, {kLeft, kRight}}, {kRight, {kLeft}}, {kDown, {kLeft, kRight}}}},
-        {Type::kVerticalSplitter,
-         {{kLeft, {kUp, kDown}}, {kUp, {kDown}}, {kRight, {kUp, kDown}}, {kDown, {kUp}}}},
-        {Type::kEmpty, {{kLeft, {kRight}}, {kUp, {kDown}}, {kRight, {kLeft}}, {kDown, {kUp}}}}};
+    switch (map_val.first) {
+      case Type::kForwardMirror:
+        switch (dir) {
+          case Direction::kLeft:
+            propagate_laser(Direction::kUp);
+            break;
+          case Direction::kUp:
+            propagate_laser(Direction::kLeft);
+            break;
+          case Direction::kRight:
+            propagate_laser(Direction::kDown);
+            break;
+          case Direction::kDown:
+            propagate_laser(Direction::kRight);
+            break;
+        }
+        break;
 
-    for (auto d : propagate_map.at(map_val.first).at(dir)) {
-      propagate_laser(d);
+      case Type::kBackwardMirror:
+        switch (dir) {
+          case Direction::kLeft:
+            propagate_laser(Direction::kDown);
+            break;
+          case Direction::kUp:
+            propagate_laser(Direction::kRight);
+            break;
+          case Direction::kRight:
+            propagate_laser(Direction::kUp);
+            break;
+          case Direction::kDown:
+            propagate_laser(Direction::kLeft);
+            break;
+        }
+        break;
+
+      case Type::kHorizontalSplitter:
+        switch (dir) {
+          case Direction::kLeft:
+            propagate_laser(Direction::kRight);
+            break;
+          case Direction::kUp:
+            propagate_laser(Direction::kLeft);
+            propagate_laser(Direction::kRight);
+            break;
+          case Direction::kRight:
+            propagate_laser(Direction::kLeft);
+            break;
+          case Direction::kDown:
+            propagate_laser(Direction::kLeft);
+            propagate_laser(Direction::kRight);
+            break;
+        }
+        break;
+
+      case Type::kVerticalSplitter:
+        switch (dir) {
+          case Direction::kLeft:
+            propagate_laser(Direction::kUp);
+            propagate_laser(Direction::kDown);
+            break;
+          case Direction::kUp:
+            propagate_laser(Direction::kDown);
+            break;
+          case Direction::kRight:
+            propagate_laser(Direction::kUp);
+            propagate_laser(Direction::kDown);
+            break;
+          case Direction::kDown:
+            propagate_laser(Direction::kUp);
+            break;
+        }
+        break;
+
+      case Type::kEmpty:
+        switch (dir) {
+          case Direction::kLeft:
+            propagate_laser(Direction::kRight);
+            break;
+          case Direction::kUp:
+            propagate_laser(Direction::kDown);
+            break;
+          case Direction::kRight:
+            propagate_laser(Direction::kLeft);
+            break;
+          case Direction::kDown:
+            propagate_laser(Direction::kUp);
+        }
     }
   }
 
-  auto result = std::count_if(map.data().begin(), map.data().end(),
-                              [](auto state) { return state.second != 0; });
+  return result;
+}
 
+}  // namespace
+
+std::string Day16_1(std::ifstream& in) {
+  auto map = GetMap(in);
+  auto result = Solve(map, {{0, 0}, kLeft});
   return std::to_string(result);
 };
 
-std::string Day16_2(std::ifstream& in) { return ""; };
+std::string Day16_2(std::ifstream& in) {
+  auto map = GetMap(in);
+  auto result{0};
+  int size = map.sizeX();
+  for (int i = 0; i < size; ++i) {
+    result = std::max(result, Solve(map, {{i, 0}, kUp}));
+    result = std::max(result, Solve(map, {{i, size - 1}, kDown}));
+    result = std::max(result, Solve(map, {{0, i}, kLeft}));
+    result = std::max(result, Solve(map, {{size - 1, i}, kRight}));
+  }
+  return std::to_string(result);
+};
