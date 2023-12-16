@@ -1,9 +1,9 @@
 #ifndef MATRIX_2D_H_
 #define MATRIX_2D_H_
 
+#include <ostream>
 #include <type_traits>
 #include <vector>
-#include <ostream>
 
 template <typename TType, bool TRowMajor = true>
 class Matrix2D {
