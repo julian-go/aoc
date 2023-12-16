@@ -7,6 +7,8 @@
 #include "solutions.hpp"
 
 namespace {
+
+using aoc::Matrix2D;
 enum Direction { kUp = 1, kRight = 2, kDown = 4, kLeft = 8 };
 
 auto GetMap(std::ifstream& in) -> std::tuple<Matrix2D<int>, std::pair<int, int>> {

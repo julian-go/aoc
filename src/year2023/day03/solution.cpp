@@ -8,6 +8,7 @@
 #include "solutions.hpp"
 
 using namespace std;
+using aoc::Matrix2D;
 
 std::string Day03_1(std::ifstream& in) {
   string line;

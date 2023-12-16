@@ -2,6 +2,8 @@
 #define AOC_COMMON_UTILS_H_
 
 #include <deque>
+#include <fstream>
+#include <string>
 
 namespace aoc {
 
@@ -30,6 +32,22 @@ int find_pattern_size(Iter from, Iter to, const int min_pattern_length) {
     }
   }
   return pattern_length;
+}
+
+inline auto size(std::ifstream& in) -> std::tuple<int, int> {
+  auto line = std::string{};
+  int x{0};
+  int y{0};
+  while (std::getline(in, line)) {
+    if (x == 0) {
+      x = std::ssize(line);
+    }
+    ++y;
+  }
+  // rewind stream
+  in.clear();
+  in.seekg(0, std::ios::beg);
+  return {x, y};
 }
 
 }  // namespace aoc

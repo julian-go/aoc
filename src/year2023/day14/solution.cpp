@@ -8,6 +8,8 @@
 
 namespace {
 
+using aoc::Matrix2D;
+
 enum class Type { kEmpty = 0, kSquare = 1, kRound = 2 };
 using Map = Matrix2D<Type>;
 

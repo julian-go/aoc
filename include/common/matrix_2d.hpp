@@ -1,9 +1,12 @@
 #ifndef MATRIX_2D_H_
 #define MATRIX_2D_H_
 
+#include <cstdint>
 #include <ostream>
 #include <type_traits>
 #include <vector>
+
+namespace aoc {
 
 template <typename TType, bool TRowMajor = true>
 class Matrix2D {
@@ -80,5 +83,7 @@ class Matrix2D {
     return out;
   }
 };
+
+}  // namespace aoc
 
 #endif  // !MATRIX_2D_H_
