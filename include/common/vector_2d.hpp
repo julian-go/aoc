@@ -12,6 +12,7 @@ struct Vector2D {
   constexpr virtual ~Vector2D() = default;
 
   int length() const { return std::abs(x) + std::abs(y); }
+  int manhattan() const { return std::abs(x) + std::abs(y); }
 
   Vector2D operator*(const int& r) const { return Vector2D(x * r, y * r); }
 
