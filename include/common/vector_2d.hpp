@@ -1,18 +1,46 @@
 #ifndef AOC_COMMON_VECTOR_2D_H_
 #define AOC_COMMON_VECTOR_2D_H_
 
+#include <array>
+#include <cstdint>
 #include <iostream>
 
 namespace aoc {
 
-template <typename TType = int>
 struct Vector2D {
+  struct Hash {
+    std::size_t operator()(const Vector2D& v) const {
+      return static_cast<std::uint64_t>(v.x) << 32 | static_cast<std::uint64_t>(v.y);
+    }
+  };
+
   constexpr Vector2D() : x(0), y(0){};
-  constexpr Vector2D(TType x, TType y) : x(x), y(y){};
+  constexpr Vector2D(int x, int y) : x(x), y(y){};
   constexpr virtual ~Vector2D() = default;
 
   int length() const { return std::abs(x) + std::abs(y); }
   int manhattan() const { return std::abs(x) + std::abs(y); }
+
+  void RotateRight() {
+    int tmp = x;
+    x = -y;
+    y = tmp;
+  }
+
+  void RotateLeft() {
+    int tmp = x;
+    x = y;
+    y = -tmp;
+  }
+
+  Vector2D Right() { return {-y, x}; }
+  Vector2D Left() { return {y, -x}; }
+
+  auto Neighbors() const -> std::array<Vector2D, 4> { return {North(), South(), East(), West()}; }
+  const Vector2D& North() const { return *this + Vector2D(0, -1); }
+  const Vector2D& South() const { return *this + Vector2D(0, 1); }
+  const Vector2D& East() const { return *this + Vector2D(1, 0); }
+  const Vector2D& West() const { return *this + Vector2D(-1, 0); }
 
   Vector2D operator*(const int& r) const { return Vector2D(x * r, y * r); }
 
@@ -43,9 +71,11 @@ struct Vector2D {
     return out;
   }
 
-  TType x;
-  TType y;
+  int x;
+  int y;
 };
+
+inline auto Manhattan(Vector2D v1, Vector2D v2) -> int { return (v1 - v2).length(); }
 
 }  // namespace aoc
 

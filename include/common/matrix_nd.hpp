@@ -2,10 +2,13 @@
 #define AOC_COMMON_MATRIX_ND_H_
 
 #include <array>
+#include <cassert>
 #include <cstdint>
 #include <ostream>
 #include <type_traits>
 #include <vector>
+
+#include "common/vector_2d.hpp"
 
 namespace aoc {
 
@@ -14,7 +17,7 @@ class Matrix {
  public:
   // numer of strides must be equal to number of dimensions and is given in the constructor
   template <typename... TArgs>
-  Matrix(TArgs... args) : dims_{args...} {
+  Matrix(TArgs... args) : dims_(args...) {
     static_assert(sizeof...(args) == Dims,
                   "Matrix: Number of arguments in constructor must match number of dimensions");
     // check that args are integer types
@@ -28,6 +31,11 @@ class Matrix {
     data_.resize(strides_.back() * dims_.back());
   }
 
+  bool contains(Vector2D v) const {
+    static_assert(Dims == 2, "Matrix: Number of arguments for index must be two");
+    return contains(v.x, v.y);
+  }
+
   template <typename... TArgs>
   bool contains(TArgs... args) const {
     static_assert(sizeof...(args) == Dims,
@@ -35,11 +43,32 @@ class Matrix {
     return contains_impl(args...);
   }
 
+  void fill(TType value) { std::fill(data_.begin(), data_.end(), value); }
+
+  const std::array<int, Dims>& size() const { return dims_; }
+
+  int size(int dim) const {
+    assert(dim < Dims);
+    return dims_[dim];
+  }
+
   // Non-boolean types
+  template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
+  T& at(Vector2D v) {
+    static_assert(Dims == 2, "Matrix: Number of arguments for index must be two");
+    return at(v.x, v.y);
+  }
+
   template <typename T = TType, typename... TArgs,
             typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
   T& at(TArgs... args) {
     return data_[index(args...)];
+  }
+
+  template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
+  const T& at(Vector2D v) const {
+    static_assert(Dims == 2, "Matrix: Number of arguments for index must be two");
+    return at(v.x, v.y);
   }
 
   template <typename T = TType, typename... TArgs,
@@ -49,14 +78,30 @@ class Matrix {
   }
 
   // Boolean specialization
+  template <typename T = TType, typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
+  T at(Vector2D v) const {
+    static_assert(Dims == 2, "Matrix: Number of arguments for index must be two");
+    return at(v.x, v.y);
+  }
+
   template <typename T = TType, typename... TArgs,
             typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
   T at(TArgs... args) const {
+    static_assert(sizeof...(args) == Dims,
+                  "Matrix: Number of arguments for index must match number of dimensions");
     return data_[index(args...)];
   }
 
-  template <typename... TArgs, typename std::enable_if_t<std::is_same_v<TType, bool>>* = nullptr>
-  void set(bool value, TArgs... args) {
+  template <typename T = TType, typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
+  void set(T value, Vector2D v) {
+    static_assert(Dims == 2,
+                  "Matrix: Number of arguments for index must match number of dimensions");
+    set(value, v.x, v.y);
+  }
+
+  template <typename T = TType, typename... TArgs,
+            typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
+  void set(T value, TArgs... args) {
     static_assert(sizeof...(args) == Dims,
                   "Matrix: Number of arguments for index must match number of dimensions");
     data_[index(args...)] = value;
@@ -71,18 +116,18 @@ class Matrix {
   std::array<int, Dims> dims_;
 
   template <typename... TArgs>
-  int index(TArgs... args) {
+  int index(TArgs... args) const {
     static_assert(sizeof...(args) == Dims,
                   "Matrix: Number of arguments for index must match number of dimensions");
     return index_impl(args...);
   }
 
   template <typename... TArgs>
-  int index_impl(int arg, TArgs... args) {
+  int index_impl(int arg, TArgs... args) const {
     return arg * strides_[Dims - sizeof...(args) - 1] + index_impl(args...);
   }
 
-  int index_impl(int arg) { return arg * strides_.back(); }
+  int index_impl(int arg) const { return arg * strides_.back(); }
 
   template <typename... TArgs>
   bool contains_impl(int arg, TArgs... args) const {

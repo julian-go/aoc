@@ -6,6 +6,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "common/vector_2d.hpp"
+
 namespace aoc {
 
 template <typename TType, bool TRowMajor = true>
@@ -20,8 +22,18 @@ class Matrix2D {
   ~Matrix2D() = default;
 
   template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
+  T& at(const Vector2D& v) {
+    return at(v.x, v.y);
+  }
+
+  template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
   T& at(const size_t& x, const size_t& y) {
     return data_[index(x, y)];
+  }
+
+  template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
+  const TType& at(const Vector2D& v) const {
+    return at(v.x, v.y);
   }
 
   template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
@@ -44,6 +56,8 @@ class Matrix2D {
     size_y_ = size_y;
     data_.resize(size_x * size_y);
   }
+
+  bool contains(const Vector2D& v) const { return contains(v.x, v.y); }
 
   bool contains(const int& x, const int& y) const {
     return x >= 0 && y >= 0 && x < size_x_ && y < size_y_;

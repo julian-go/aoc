@@ -11,7 +11,7 @@ namespace {
 
 constexpr auto kMaxMapSize = int{200};
 using Occupancy = std::array<bool, kMaxMapSize>;
-using Coordinate = aoc::Vector2D<int>;
+using Coordinate = aoc::Vector2D;
 
 auto ParseInput(std::ifstream& in) -> std::tuple<std::vector<Coordinate>, Occupancy, Occupancy> {
   auto galaxies = std::vector<Coordinate>{};

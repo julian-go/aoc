@@ -21,7 +21,7 @@ using Map = aoc::Matrix2D<int>;
 template <typename T>
 using Cache = std::vector<T>;
 using Heading = std::complex<double>;
-using Coordinate = aoc::Vector2D<int>;
+using Coordinate = aoc::Vector2D;
 using namespace std::complex_literals;
 
 struct State {
@@ -191,9 +191,10 @@ std::string Day17_1(std::ifstream& in) {
 };
 
 std::string Day17_2(std::ifstream& in) {
+  return std::to_string(0);
   auto map = GetMap(in);
 
-  auto previous = std::map<aoc::Vector2D<int>, aoc::Vector2D<int>>{};
+  auto previous = std::map<aoc::Vector2D, aoc::Vector2D>{};
   auto distance = Cache<int>{};
   distance.resize(kCacheSize, std::numeric_limits<int>::max());
   Set(distance, 0, 0, 0, 1.0, 0);
