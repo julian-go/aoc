@@ -22,7 +22,7 @@ class Matrix2D {
   ~Matrix2D() = default;
 
   template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
-  T& at(const Vector2D& v) {
+  T& at(const Vector2D<int>& v) {
     return at(v.x, v.y);
   }
 
@@ -32,7 +32,7 @@ class Matrix2D {
   }
 
   template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
-  const TType& at(const Vector2D& v) const {
+  const TType& at(const Vector2D<int>& v) const {
     return at(v.x, v.y);
   }
 
@@ -57,7 +57,7 @@ class Matrix2D {
     data_.resize(size_x * size_y);
   }
 
-  bool contains(const Vector2D& v) const { return contains(v.x, v.y); }
+  bool contains(const Vector2D<int>& v) const { return contains(v.x, v.y); }
 
   bool contains(const int& x, const int& y) const {
     return x >= 0 && y >= 0 && x < size_x_ && y < size_y_;

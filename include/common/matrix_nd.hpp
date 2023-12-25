@@ -31,7 +31,7 @@ class Matrix {
     data_.resize(strides_.back() * dims_.back());
   }
 
-  bool contains(Vector2D v) const {
+  bool contains(Vector2D<int> v) const {
     static_assert(Dims == 2, "Matrix: Number of arguments for index must be two");
     return contains(v.x, v.y);
   }
@@ -54,7 +54,7 @@ class Matrix {
 
   // Non-boolean types
   template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
-  T& at(Vector2D v) {
+  T& at(Vector2D<int> v) {
     static_assert(Dims == 2, "Matrix: Number of arguments for index must be two");
     return at(v.x, v.y);
   }
@@ -66,7 +66,7 @@ class Matrix {
   }
 
   template <typename T = TType, typename std::enable_if_t<!std::is_same_v<T, bool>>* = nullptr>
-  const T& at(Vector2D v) const {
+  const T& at(Vector2D<int> v) const {
     static_assert(Dims == 2, "Matrix: Number of arguments for index must be two");
     return at(v.x, v.y);
   }
@@ -79,7 +79,7 @@ class Matrix {
 
   // Boolean specialization
   template <typename T = TType, typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
-  T at(Vector2D v) const {
+  T at(Vector2D<int> v) const {
     static_assert(Dims == 2, "Matrix: Number of arguments for index must be two");
     return at(v.x, v.y);
   }
@@ -93,7 +93,7 @@ class Matrix {
   }
 
   template <typename T = TType, typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
-  void set(T value, Vector2D v) {
+  void set(T value, Vector2D<int> v) {
     static_assert(Dims == 2,
                   "Matrix: Number of arguments for index must match number of dimensions");
     set(value, v.x, v.y);

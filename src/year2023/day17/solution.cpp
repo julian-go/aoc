@@ -19,8 +19,8 @@ constexpr int kNumheadings{4};
 
 using Map = aoc::Matrix2D<int>;
 using Cache = aoc::Matrix<int, 3>;
-using Heading = aoc::Vector2D;
-using Coordinate = aoc::Vector2D;
+using Heading = aoc::Vector2D<int>;
+using Coordinate = aoc::Vector2D<int>;
 using namespace std::complex_literals;
 
 struct State {

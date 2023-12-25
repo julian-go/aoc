@@ -7,28 +7,30 @@
 
 namespace aoc {
 
+template <typename T = int, typename std::enable_if_t<std::is_integral_v<T>>* = nullptr>
 struct Vector2D {
   struct Hash {
+    template <typename std::enable_if_t<std::is_same_v<T, int>>* = nullptr>
     std::size_t operator()(const Vector2D& v) const {
       return static_cast<std::uint64_t>(v.x) << 32 | static_cast<std::uint64_t>(v.y);
     }
   };
 
   constexpr Vector2D() : x(0), y(0){};
-  constexpr Vector2D(int x, int y) : x(x), y(y){};
+  constexpr Vector2D(T x, T y) : x(x), y(y){};
   constexpr virtual ~Vector2D() = default;
 
-  int length() const { return std::abs(x) + std::abs(y); }
-  int manhattan() const { return std::abs(x) + std::abs(y); }
+  T length() const { return std::abs(x) + std::abs(y); }
+  T manhattan() const { return std::abs(x) + std::abs(y); }
 
   void RotateRight() {
-    int tmp = x;
+    T tmp = x;
     x = -y;
     y = tmp;
   }
 
   void RotateLeft() {
-    int tmp = x;
+    T tmp = x;
     x = y;
     y = -tmp;
   }
@@ -71,11 +73,14 @@ struct Vector2D {
     return out;
   }
 
-  int x;
-  int y;
+  T x;
+  T y;
 };
 
-inline auto Manhattan(Vector2D v1, Vector2D v2) -> int { return (v1 - v2).length(); }
+template <typename T = int, std::enable_if<std::is_integral_v<T>>* = nullptr>
+inline auto Manhattan(Vector2D<T> v1, Vector2D<T> v2) -> T {
+  return (v1 - v2).length();
+}
 
 }  // namespace aoc
 

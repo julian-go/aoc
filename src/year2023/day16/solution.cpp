@@ -23,7 +23,7 @@ enum Direction { kUp = 1, kDown = 2, kLeft = 4, kRight = 8 };
 
 using State = std::pair<Type, int>;
 using Map = aoc::Matrix2D<State>;
-using Coordinate = aoc::Vector2D;
+using Coordinate = aoc::Vector2D<int>;
 
 auto GetMap(std::ifstream& in) -> Map {
   auto [size_x, size_y] = aoc::size(in);
