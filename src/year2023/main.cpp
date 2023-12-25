@@ -82,6 +82,7 @@ auto main(int argc, char *argv[]) -> int {
       {"17-1-example", Day17_1, "102", p + "example-17.txt"},
       {"17-1-problem", Day17_1, "1256", p + "problem-17.txt"},
       {"17-2-example", Day17_2, "94", p + "example-17.txt"},
+      {"17-2-example", Day17_2, "71", p + "example-17-2.txt"},
       {"17-2-problem", Day17_2, "1382", p + "problem-17.txt"},
       {"18-1-example", Day18_1, "", p + "example-18.txt"},
       {"18-1-problem", Day18_1, "", p + "problem-18.txt"},
