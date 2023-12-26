@@ -4,3 +4,7 @@
 [submodule "lib/magic_enum"]
 	path = lib/magic_enum
 	url = https://github.com/Neargye/magic_enum.git
+[submodule "inputs"]
+	path = inputs
+	url = https://github.com/julian-go/aoc_inputs.git
+	branch = main
