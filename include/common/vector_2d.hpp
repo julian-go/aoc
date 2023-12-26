@@ -39,10 +39,10 @@ struct Vector2D {
   Vector2D Left() { return {y, -x}; }
 
   auto Neighbors() const -> std::array<Vector2D, 4> { return {North(), South(), East(), West()}; }
-  const Vector2D& North() const { return *this + Vector2D(0, -1); }
-  const Vector2D& South() const { return *this + Vector2D(0, 1); }
-  const Vector2D& East() const { return *this + Vector2D(1, 0); }
-  const Vector2D& West() const { return *this + Vector2D(-1, 0); }
+  Vector2D North() const { return *this + Vector2D(0, -1); }
+  Vector2D South() const { return *this + Vector2D(0, 1); }
+  Vector2D East() const { return *this + Vector2D(1, 0); }
+  Vector2D West() const { return *this + Vector2D(-1, 0); }
 
   Vector2D operator*(const int& r) const { return Vector2D(x * r, y * r); }
 
