@@ -42,8 +42,18 @@ class Matrix2D {
   }
 
   template <typename T = TType, typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
+  T at(const Vector2D<int>& v) const {
+    return data_[index(v.x, v.y)];
+  }
+
+  template <typename T = TType, typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
   T at(const size_t& x, const size_t& y) const {
     return data_[index(x, y)];
+  }
+
+  template <typename T = TType, typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>
+  void set(const Vector2D<int>& v, T value) {
+    data_[index(v.x, v.y)] = value;
   }
 
   template <typename T = TType, typename std::enable_if_t<std::is_same_v<T, bool>>* = nullptr>

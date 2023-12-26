@@ -12,9 +12,8 @@ namespace {
 
 enum class Type { kEmpty, kWall, kNorthRamp, kSouthRamp, kEastRamp, kWestRamp };
 
-using Cache = aoc::Matrix2D<int>;
 using Coordinate = aoc::Vector2D<int>;
-using CoordinateSet = std::unordered_set<Coordinate, Coordinate::Hash>;
+using VisitCache = aoc::Matrix2D<bool>;
 using Map = aoc::Matrix2D<Type>;
 
 struct Node {
@@ -132,30 +131,22 @@ void Contract(Graph& g) {
   std::erase_if(g, [](auto& p) { return p.second.neighbors.empty(); });
 }
 
-using TerminalSet = std::deque<Coordinate>;
-
-auto g(const Problem& p, CoordinateSet visited, Coordinate c) -> std::tuple<int, TerminalSet> {
+inline auto g(const Problem& p, VisitCache& visited, const Coordinate& c) -> int {
   if (c == p.goal) {
-    return {0, {c}};
+    return 0;
   }
 
-  visited.insert(c);
-
-  auto node = p.graph.at(c);
+  visited.set(c, true);
+  const auto& node = p.graph.at(c);
   int cost = std::numeric_limits<int>::min();
-  TerminalSet terminal_set{};
   for (const auto& [n, d] : node.neighbors) {
-    if (visited.contains(n)) {
+    if (visited.at(n)) {
       continue;
     }
-    auto [distance, nodes] = g(p, visited, n);
-    if (d + distance > cost) {
-      cost = d + distance;
-      terminal_set = nodes;
-    }
+    cost = std::max(cost, d + g(p, visited, n));
   }
-  terminal_set.push_front(c);
-  return {cost, terminal_set};
+  visited.set(c, false);
+  return cost;
 }
 
 }  // namespace
@@ -165,18 +156,8 @@ std::string Day23_1(std::ifstream& in) {
   auto nodes = NodesFromMap<false>(map);
   Contract(nodes);
   auto problem = Problem{nodes, stop};
-  auto [result, terminal_set] = g(problem, {}, start);
-  // for (auto& c : terminal_set) {
-  //   std::cout << c << "\n";
-  // }
-  // for (auto& [id, node] : nodes) {
-  //   std::cout << id << " to ";
-  //   for (auto& [n, d] : node.neighbors) {
-  //     std::cout << n << ":" << d << "; ";
-  //   }
-  //   std::cout << "\n";
-  // }
-  return std::to_string(result);
+  auto visited = VisitCache{map.sizeX(), map.sizeY(), false};
+  return std::to_string(g(problem, visited, start));
 };
 
 std::string Day23_2(std::ifstream& in) {
@@ -184,6 +165,6 @@ std::string Day23_2(std::ifstream& in) {
   auto nodes = NodesFromMap<true>(map);
   Contract(nodes);
   auto problem = Problem{nodes, stop};
-  auto [result, terminal_set] = g(problem, {}, start);
-  return std::to_string(result);
+  auto visited = VisitCache{map.sizeX(), map.sizeY(), false};
+  return std::to_string(g(problem, visited, start));
 };
